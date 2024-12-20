@@ -116,11 +116,16 @@ int brightness_test_ui(int argc, FAR char *argv[])
     ui_brightness(&run);
 
     while (run) {
-        lv_timer_handler();
-        usleep(10 * 1000);
+        uint32_t idle;
+        idle = lv_timer_handler();
+
+        /* Minimum sleep of 1ms */
+
+        idle = idle ? idle : 1;
+        usleep(idle * 1000);
     }
 
-    lv_disp_remove(result.disp);
+    lv_nuttx_deinit(&result);
     lv_deinit();
 
     return 0;
